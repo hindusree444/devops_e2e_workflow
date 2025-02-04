@@ -1,66 +1,101 @@
 pipeline {
-  agent any 
-  environment {
-    CONFIG_JSON = credentials('gcp-serviceaccount-key') // Jenkins secret
-  }
-  stages {
-    stage('Checkout') {
-      steps {
-        sh 'echo passed'
-        git branch: 'main', url: 'https://github.com/hindusree444/devops_e2e_workflow.git'
-      }
-    }
-    stage('Terraform Init') {
-      steps {
-        sh 'export CONFIG_JSON_CREDENTIALS =$CONFIG_JSON'
-        sh 'echo get json key' 
-        sh 'cat CONFIG_JSON_CREDENTIALS'
-        //sh 'cd spring-boot-app/terraform && terraform init'
-      }
-    }
-    stage('Terraform Plan') {
-      steps {
-        sh 'cd spring-boot-app/terraform && terraform plan'
-      }
+    agent any 
+
+    environment {
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-serviceaccount-key') // GCP JSON key stored as a secret
     }
 
-    stage('Terraform Apply') {
-      steps {
-        sh 'cd spring-boot-app/terraform && terraform apply -auto-approve'
-      }
-    }
-    stage('Build and Test') {
-      steps {
-        sh 'ls -ltr'
-        // build the project and create a JAR file
-        sh 'cd spring-boot-app && mvn clean package'
-      }
-    }
-    /*stage('Static Code Analysis') {
-      environment {
-      SONAR_URL = "http://34.201.116.83:9000"
-      }
-      steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-        }
-      }
-    }*/
-    stage('Build and Push Docker Image') {
-      environment {
-        DOCKER_IMAGE = "hindusreedunaboyina/e2ebuild:${BUILD_NUMBER}"
-        DOCKERFILE_LOCATION = "devops_e2e_workflow/spring-boot-app/Dockerfile"
-        REGISTRY_CREDENTIALS = credentials('docker-cred')
-      }
-      steps {
-        script {
-            sh 'docker build -t ${DOCKER_IMAGE} .'
-            def dockerImage = docker.image("${DOCKER_IMAGE}")
-            docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
-                dockerImage.push()
+    stages {
+        stage('Checkout') {
+            steps {
+                sh 'echo "Checking out repository..."'
+                git branch: 'main', url: 'https://github.com/hindusree444/devops_e2e_workflow.git'
             }
         }
-      }
+
+        stage('Terraform Init') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        terraform init
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        terraform plan
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        terraform apply -auto-approve
+                    '''
+                }
+            }
+        }
+
+        stage('Build and Test') {
+            steps {
+                sh 'echo "Listing files before build:"'
+                sh 'ls -ltr'
+                sh '''
+                    echo "Building Spring Boot Application..."
+                    cd spring-boot-app
+                    mvn clean package
+                '''
+            }
+        }
+
+        /* Uncomment this section if SonarQube is required
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = "http://34.201.116.83:9000"
+            }
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh '''
+                        cd spring-boot-app
+                        mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=$SONAR_URL
+                    '''
+                }
+            }
+        }
+        */
+
+        stage('Build and Push Docker Image') {
+            environment {
+                DOCKER_IMAGE = "hindusreedunaboyina/e2ebuild:${BUILD_NUMBER}"
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh '''
+                            echo "Building Docker Image..."
+                            cd spring-boot-app
+                            docker build -t $DOCKER_IMAGE .
+                            echo "Logging into DockerHub..."
+                            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            echo "Pushing Docker Image..."
+                            docker push $DOCKER_IMAGE
+                        '''
+                    }
+                }
+            }
+        }
     }
-  }
 }
