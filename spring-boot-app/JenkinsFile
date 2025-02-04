@@ -13,8 +13,9 @@ pipeline {
     stage('Terraform Init') {
       steps {
         sh 'export CONFIG_JSON_CREDENTIALS =$CONFIG_JSON'
-        sh 'cat $CONFIG_JSON'
-        sh 'cd spring-boot-app/terraform && terraform init'
+        sh 'echo get json key' 
+        sh 'cat CONFIG_JSON_CREDENTIALS'
+        //sh 'cd spring-boot-app/terraform && terraform init'
       }
     }
     stage('Terraform Plan') {
