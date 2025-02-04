@@ -1,5 +1,8 @@
 pipeline {
   agent any 
+  environment {
+    CONFIG_JSON = credentials('devops-e2e-workflow-2f32ecf949ed') // Jenkins secret
+  }
   stages {
     stage('Checkout') {
       steps {
@@ -9,6 +12,7 @@ pipeline {
     }
     stage('Terraform Init') {
       steps {
+        sh 'export CONFIG_JSON_CREDENTIALS =$CONFIG_JSON'
         sh 'cd spring-boot-app/terraform && terraform init'
       }
     }
