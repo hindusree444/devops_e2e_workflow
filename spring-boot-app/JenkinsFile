@@ -1,7 +1,7 @@
 pipeline {
   agent any 
   environment {
-    CONFIG_JSON = credentials('devops-e2e-workflow-2f32ecf949ed') // Jenkins secret
+    CONFIG_JSON = credentials('gcp-serviceaccount-key') // Jenkins secret
   }
   stages {
     stage('Checkout') {

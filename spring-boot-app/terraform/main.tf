@@ -1,5 +1,4 @@
 provider "google" {
-  credentials = file("devops-e2e-workflow-2f32ecf949ed.json")
   project     = "devops-e2e-workflow"
   region      = "us-central1"
 }
