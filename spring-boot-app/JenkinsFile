@@ -14,9 +14,10 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
                     sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
                         cd spring-boot-app/terraform
                         terraform init
                     '''
@@ -26,9 +27,9 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
                     sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
                         terraform plan
                     '''
@@ -38,9 +39,9 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
                     sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
                         terraform apply -auto-approve
                     '''
