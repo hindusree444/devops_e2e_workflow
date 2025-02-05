@@ -1,6 +1,6 @@
 provider "google" {
-  project     = "devops-e2e-workflow"
-  region      = "us-central1"
+  project = "devops-e2e-workflow"
+  region  = "us-central1"
 }
 
 resource "google_container_cluster" "gke_cluster" {
@@ -17,11 +17,11 @@ resource "google_container_node_pool" "primary_nodes" {
   node_count = 2
 
   node_config {
-    machine_type = "e2-medium"
-    disk_size_gb = 30
+    service_account = "devops-e2e-sa@devops-e2e-workflow.iam.gserviceaccount.com"
+    machine_type    = "e2-medium"
+    disk_size_gb    = 30
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
 }
-#commit

@@ -1,7 +1,7 @@
 pipeline {
     agent any 
     environment {
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-serviceaccount-key') // GCP JSON key stored as a secret
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('devopse2e') // GCP JSON key stored as a secret
     }
 
     stages {
@@ -12,12 +12,24 @@ pipeline {
             }
         }
 
-        stage('Terraform Init') {
+        stage('Authenticate with GCP') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
                     sh '''
+                        echo "Authenticating with Google Cloud..."
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                        gcloud auth list
+                    '''
+                }
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
                         terraform init
                     '''
@@ -27,7 +39,7 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
@@ -39,7 +51,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
@@ -88,8 +100,10 @@ pipeline {
                             echo "Building Docker Image..."
                             cd spring-boot-app
                             docker build -t $DOCKER_IMAGE .
+                            
                             echo "Logging into DockerHub..."
                             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                            
                             echo "Pushing Docker Image..."
                             docker push $DOCKER_IMAGE
                         '''
