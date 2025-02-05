@@ -91,7 +91,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             environment {
-                DOCKER_IMAGE = "hindusreedunaboyina/e2ebuild:${BUILD_NUMBER}"
+                DOCKER_IMAGE = "swapnareddy.putluru@gmail.com/e2ebuild:${BUILD_NUMBER}"
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
@@ -99,7 +99,7 @@ pipeline {
                         // Debugging: Print out Docker credentials (sensitive information omitted in real use)
                         echo "Building Docker Image..."
                         echo "DOCKER_USER: ${DOCKER_USER}"  // Ensure the user is correct (do not expose passwords)
-                        echo "DOCKER_PASS: ${DOCKER_PASS[0..3]}..."  // Only print partial password for debugging
+            
                         
                         // Build Docker image
                         dir('spring-boot-app') {
