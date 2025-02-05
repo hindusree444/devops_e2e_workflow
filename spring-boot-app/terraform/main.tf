@@ -28,5 +28,10 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
+  lifecycle {
+    # Remove prevent_destroy if present
+    prevent_destroy = false
+  }  
 }
+
 #commit
