@@ -61,6 +61,18 @@ pipeline {
             }
         }
 
+        stage('Destroy GKE Cluster') {
+            steps {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        terraform destroy -auto-approve
+                    '''
+                }
+            }
+        }
+
         stage('Build and Test') {
             steps {
                 sh 'echo "Listing files before build:"'
@@ -99,7 +111,7 @@ pipeline {
                         // Debugging: Print out Docker credentials (sensitive information omitted in real use)
                         echo "Building Docker Image..."
                         echo "DOCKER_USER: ${DOCKER_USER}"  // Ensure the user is correct (do not expose passwords)
-            
+                        
                         // Build Docker image
                         dir('spring-boot-app') {
                             sh "docker build -t ${DOCKER_IMAGE} ."
