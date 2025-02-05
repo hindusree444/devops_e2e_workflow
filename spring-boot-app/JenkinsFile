@@ -91,7 +91,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             environment {
-                DOCKER_IMAGE = "swapnareddy.putluru@gmail.com/e2ebuild:${BUILD_NUMBER}"
+                DOCKER_IMAGE = "19980617/e2ebuild:${BUILD_NUMBER}"
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
