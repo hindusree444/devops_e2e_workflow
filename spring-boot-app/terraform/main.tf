@@ -1,6 +1,7 @@
 provider "google" {
   project = "devops-e2e-workflow"
   region  = "europe-west1"
+ # zone = "europe-west1b"
 }
 
 resource "google_container_cluster" "gke_cluster" {
@@ -8,7 +9,10 @@ resource "google_container_cluster" "gke_cluster" {
   location = "europe-west1"
 
   remove_default_node_pool = true
-  initial_node_count       = 2
+  initial_node_count       = 1
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {
