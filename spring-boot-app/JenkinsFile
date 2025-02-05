@@ -1,7 +1,6 @@
 pipeline {
     agent any 
-
-        environment {
+    environment {
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-serviceaccount-key') // GCP JSON key stored as a secret
     }
 
@@ -17,7 +16,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
                     sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
                         cd spring-boot-app/terraform
                         terraform init
                     '''
@@ -29,7 +28,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
                     sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
                         cd spring-boot-app/terraform
                         terraform plan
                     '''
@@ -39,9 +38,9 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-serviceaccount-key', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        export GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
                         cd spring-boot-app/terraform
                         terraform apply -auto-approve
                     '''
