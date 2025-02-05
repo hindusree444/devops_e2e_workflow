@@ -11,7 +11,7 @@ resource "google_container_cluster" "gke_cluster" {
   remove_default_node_pool = true
   initial_node_count       = 1
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
