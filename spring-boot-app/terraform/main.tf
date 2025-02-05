@@ -1,6 +1,6 @@
 provider "google" {
   project = "devops-e2e-workflow"
-  region  = "us-central1"
+  region  = "asia-south1"
 }
 
 resource "google_container_cluster" "gke_cluster" {
@@ -19,7 +19,7 @@ resource "google_container_node_pool" "primary_nodes" {
   node_config {
     service_account = "devops-e2e-sa@devops-e2e-workflow.iam.gserviceaccount.com"
     machine_type    = "e2-medium"
-    disk_size_gb    = 20
+    disk_size_gb    = 50
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
