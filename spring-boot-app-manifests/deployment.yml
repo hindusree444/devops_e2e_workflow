@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-boot-app
+  name: java-app-demo
   labels:
-    app: spring-boot-app
+    app: java-app-demo
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: spring-boot-app
+      app: java-app-demo
   template:
     metadata:
       labels:
-        app: spring-boot-app
+        app: java-app-demo
     spec:
       containers:
-      - name: spring-boot-app
-        image: abhishekf5/ultimate-cicd:replaceImageTag
+      - name: java-app
+        image: 19980617/e2ebuild:38
         ports:
         - containerPort: 8080
