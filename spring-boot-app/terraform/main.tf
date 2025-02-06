@@ -1,36 +1,24 @@
-provider "google" {
-  project = "devops-e2e-workflow"
-  zone = "europe-west1-b"
-}
+# Compute instance (VM) resource
+resource "google_compute_instance" "my_instance" {
+  name         = "small-instance"
+  machine_type = "e2-micro"
+  zone         = "us-central1-a"
 
-resource "google_container_cluster" "gke_cluster" {
-  name     = "my-gke-cluster1"
-  #location = "europe-west1"
+  boot_disk {
+    initialize_params {
+      image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts"
+    }
+  }
 
-  remove_default_node_pool = true
-  initial_node_count       = 1
-  lifecycle {
-    prevent_destroy = false
+  network_interface {
+    network = "default"
+
+    access_config {
+      # Allocate a public IP address
+    }
   }
 }
 
-resource "google_container_node_pool" "primary_nodes" {
-  name       = "node-pool"
-  cluster    = google_container_cluster.gke_cluster.name
-  node_count = 1
-
-  node_config {
-    service_account = "devops-e2e-sa@devops-e2e-workflow.iam.gserviceaccount.com"
-    machine_type    = "e2-medium"
-    disk_size_gb    = 10
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
-  }
-  lifecycle {
-    # Remove prevent_destroy if present
-    prevent_destroy = false
-  }  
+output "instance_ip" {
+  value = google_compute_instance.my_instance.network_interface[0].access_config[0].nat_ip
 }
-
-#commit1
