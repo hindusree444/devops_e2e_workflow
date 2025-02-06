@@ -60,7 +60,7 @@ pipeline {
                 }
             }
         }
-        /* stage('Build and Test') {
+        stage('Build and Test') {
             steps {
                 sh 'echo "Listing files before build:"'
                 sh 'ls -ltr'
@@ -71,7 +71,7 @@ pipeline {
                 '''
             }
         }
-        /*
+        
         /* stage('Destroy GKE Cluster') {
             steps {
                 withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_SA_KEY')]) {
@@ -104,10 +104,10 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             environment {
-                DOCKER_IMAGE = "19980617/e2ebuild:${BUILD_NUMBER}"
+                DOCKER_IMAGE = "varaprasad365/end2endbuild:${BUILD_NUMBER}"
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-cred1', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         // Debugging: Print out Docker credentials (sensitive information omitted in real use)
                         echo "Building Docker Image..."
