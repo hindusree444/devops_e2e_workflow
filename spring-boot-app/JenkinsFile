@@ -2,6 +2,9 @@ pipeline {
     agent any 
     environment {
         GOOGLE_APPLICATION_CREDENTIALS = credentials('devopse2e') // GCP JSON key stored as a secret
+        GCP_PROJECT = "devops-e2e-workflow"
+        TF_VAR_cluster_name = "my-gke-cluster1"
+        TF_VAR_zone = "europe-west1-b"
     }
 
     stages {
@@ -76,7 +79,7 @@ pipeline {
         stage('Save Kubeconfig') {
             steps {
                 sh '''
-                    gcloud container clusters get-credentials $TF_VAR_cluster_name --region $TF_VAR_region --project $GCP_PROJECT
+                    gcloud container clusters get-credentials $TF_VAR_cluster_name --zone $TF_VAR_zone --project $GCP_PROJECT
                     cp ~/.kube/config kubeconfig
                 '''
                 stash name: 'kubeconfig', includes: 'kubeconfig'
@@ -88,7 +91,9 @@ pipeline {
                 unstash 'kubeconfig'
                 sh '''
                     export KUBECONFIG=kubeconfig
-                    kubectl apply -f k8s-deployment.yaml
+                    cd ../spring-boot-app-manifests/
+                    kubectl apply -f deployment.yaml
+                    kubectl apply -f service.yaml
                 '''
             }
         }
