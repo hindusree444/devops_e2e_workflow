@@ -5,7 +5,7 @@ provider "google" {
 
 resource "google_container_cluster" "gke_cluster" {
   name     = "my-gke-cluster1"
-  location = "europe-west1b"
+  
 
   remove_default_node_pool = true
   initial_node_count       = 1
