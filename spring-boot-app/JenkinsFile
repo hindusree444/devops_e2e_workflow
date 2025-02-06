@@ -1,20 +1,20 @@
 pipeline {
     agent any 
     environment {
-        GOOGLE_APPLICATION_CREDENTIALS = credentials('devopse2e') // GCP JSON key stored as a secret
+        GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-credentials') // GCP JSON key stored as a secret
     }
 
     stages {
         stage('Checkout') {
             steps {
                 sh 'echo "Checking out repository..."'
-                git branch: 'main', url: 'https://github.com/hindusree444/devops_e2e_workflow.git'
+                git branch: 'main', url: 'https://github.com/Varaprasad0389/devops_e2e_workflow.git'
             }
         }
 
         stage('Authenticate with GCP') {
             steps {
-                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         echo "Authenticating with Google Cloud..."
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
@@ -27,7 +27,7 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
@@ -39,7 +39,7 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
@@ -51,7 +51,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
@@ -60,7 +60,7 @@ pipeline {
                 }
             }
         }
-        stage('Build and Test') {
+        /* stage('Build and Test') {
             steps {
                 sh 'echo "Listing files before build:"'
                 sh 'ls -ltr'
@@ -71,9 +71,10 @@ pipeline {
                 '''
             }
         }
-        stage('Destroy GKE Cluster') {
+        /*
+        /* stage('Destroy GKE Cluster') {
             steps {
-                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-credentials', variable: 'GCP_SA_KEY')]) {
                     sh '''
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         cd spring-boot-app/terraform
@@ -84,6 +85,7 @@ pipeline {
                     '''
                 }
             }
+        /*
         /* Uncomment this section if SonarQube is required
         stage('Static Code Analysis') {
             environment {
