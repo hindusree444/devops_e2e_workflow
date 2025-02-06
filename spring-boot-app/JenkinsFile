@@ -91,7 +91,6 @@ pipeline {
                 unstash 'kubeconfig'
                 sh '''
                     export KUBECONFIG=kubeconfig
-                    cd ../spring-boot-app-manifests/
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
                 '''
