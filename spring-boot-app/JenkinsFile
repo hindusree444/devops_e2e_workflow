@@ -60,19 +60,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Destroy GKE Cluster') {
-            steps {
-                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
-                    sh '''
-                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
-                        cd spring-boot-app/terraform
-                        terraform destroy -auto-approve
-                    '''
-                }
-            }
-        }
-
         stage('Build and Test') {
             steps {
                 sh 'echo "Listing files before build:"'
