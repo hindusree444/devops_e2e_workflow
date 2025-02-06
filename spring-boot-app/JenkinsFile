@@ -104,7 +104,7 @@ pipeline {
             }
         }
 
-        stage('Save Kubeconfig') {
+        /*stage('Save Kubeconfig') {
             steps {
                 sh '''
                     gcloud container clusters get-credentials $TF_VAR_cluster_name --zone $TF_VAR_zone --project $GCP_PROJECT
@@ -123,9 +123,9 @@ pipeline {
                     kubectl apply -f service.yaml
                 '''
             }
-        }
+        }*/
 
-        /*stage('Destroy GKE Cluster') {
+        stage('Destroy GKE Cluster') {
             steps {
                 withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
                     sh '''
@@ -138,7 +138,7 @@ pipeline {
                     '''
                 }
             }
-        }*/
+        }
 
         /* Uncomment this section if SonarQube is required
         stage('Static Code Analysis') {
