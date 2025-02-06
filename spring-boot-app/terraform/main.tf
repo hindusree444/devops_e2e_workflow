@@ -1,8 +1,12 @@
-# Compute instance (VM) resource
-resource "google_compute_instance" "my_instance" {
-  name         = "small-instance"
-  machine_type = "e2-micro"
-  zone         = "us-central1-a"
+provider "google" {
+  project = "devops-e2e-workflow"
+  zone    = "europe-west1-b"
+}
+
+resource "google_compute_instance" "vm_instance" {
+  name         = "my-vm-instance"
+  machine_type = "e2-medium"
+  zone         = "europe-west1-b"
 
   boot_disk {
     initialize_params {
@@ -12,13 +16,6 @@ resource "google_compute_instance" "my_instance" {
 
   network_interface {
     network = "default"
-
-    access_config {
-      # Allocate a public IP address
-    }
+    access_config {}
   }
-}
-
-output "instance_ip" {
-  value = google_compute_instance.my_instance.network_interface[0].access_config[0].nat_ip
 }
