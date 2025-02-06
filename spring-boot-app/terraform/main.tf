@@ -1,11 +1,11 @@
 provider "google" {
   project = "devops-e2e-workflow"
-  zone = "europe-west1b"
+  zone = "europe-west1-b"
 }
 
 resource "google_container_cluster" "gke_cluster" {
   name     = "my-gke-cluster1"
-  location = "europe-west1"
+  #location = "europe-west1"
 
   remove_default_node_pool = true
   initial_node_count       = 1
