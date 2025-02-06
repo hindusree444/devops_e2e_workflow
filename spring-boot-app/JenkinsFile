@@ -71,7 +71,19 @@ pipeline {
                 '''
             }
         }
-
+        stage('Destroy GKE Cluster') {
+            steps {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        echo "Destroying GKE Cluster and Resources..."
+                        
+                        # Run terraform destroy to remove all resources
+                        terraform destroy -auto-approve
+                    '''
+                }
+            }
         /* Uncomment this section if SonarQube is required
         stage('Static Code Analysis') {
             environment {
