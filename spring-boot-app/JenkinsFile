@@ -119,6 +119,8 @@ pipeline {
             steps {
                 unstash 'kubeconfig'
                 sh '''
+                    echo "Current Directory:"
+                    pwd
                     export KUBECONFIG=kubeconfig
                     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
                     kubectl apply -f deployment.yml
