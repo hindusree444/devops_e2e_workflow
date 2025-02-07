@@ -123,8 +123,8 @@ pipeline {
                     pwd
                     export KUBECONFIG=kubeconfig
                     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-                    kubectl apply -f deployment.yml
-                    kubectl apply -f service.yml
+                    kubectl apply -f spring-boot-app/deployment.yml
+                    kubectl apply -f spring-boot-app/service.yml
                 '''
             }
         }
