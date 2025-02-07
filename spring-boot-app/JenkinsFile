@@ -19,9 +19,6 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
                     sh '''
-                        echo "Installing GKE Auth Plugin..."
-                        gcloud components install gke-gcloud-auth-plugin || echo "Already installed"
-
                         echo "Authenticating with Google Cloud..."
                         export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
                         gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
@@ -87,15 +84,18 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     script {
                         echo "Building Docker Image..."
-                        echo "DOCKER_USER: ${DOCKER_USER}"  
+                        echo "DOCKER_USER: ${DOCKER_USER}"
 
+                        // Build Docker image
                         dir('spring-boot-app') {
                             sh "docker build -t ${DOCKER_IMAGE} ."
                         }
 
+                        // Log into DockerHub
                         echo "Logging into DockerHub..."
                         sh "echo ${DOCKER_PASS} | docker login -u ${DOCKER_USER} --password-stdin"
 
+                        // Push Docker image
                         echo "Pushing Docker Image..."
                         sh "docker push ${DOCKER_IMAGE}"
                     }
@@ -106,8 +106,11 @@ pipeline {
         stage('Save Kubeconfig') {
             steps {
                 sh '''
-                    gcloud components install gke-gcloud-auth-plugin || echo "Already installed"
+                    echo "Ensuring GKE authentication plugin is accessible..."
+                    export PATH=$PATH:/root/google-cloud-sdk/bin
                     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+                    echo "Fetching GKE credentials..."
                     gcloud container clusters get-credentials $TF_VAR_cluster_name --zone $TF_VAR_zone --project $GCP_PROJECT
                     cp ~/.kube/config kubeconfig
                 '''
@@ -119,12 +122,48 @@ pipeline {
             steps {
                 unstash 'kubeconfig'
                 sh '''
+                    export PATH=$PATH:/root/google-cloud-sdk/bin
                     export KUBECONFIG=kubeconfig
                     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+                    echo "Applying Kubernetes configurations..."
                     kubectl apply -f deployment.yaml
                     kubectl apply -f service.yaml
                 '''
             }
         }
+
+        /*
+        stage('Destroy GKE Cluster') {
+            steps {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        echo "Destroying GKE Cluster and Resources..."
+                        
+                        # Run terraform destroy to remove all resources
+                        terraform destroy -auto-approve
+                    '''
+                }
+            }
+        }
+
+        /* Uncomment this section if SonarQube is required
+        stage('Static Code Analysis') {
+            environment {
+                SONAR_URL = "http://34.201.116.83:9000"
+            }
+            steps {
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh '''
+                        cd spring-boot-app
+                        mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=$SONAR_URL
+                    '''
+                }
+            }
+        }
+        */
+
     }
 }
