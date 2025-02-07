@@ -104,7 +104,7 @@ pipeline {
             }
         }
 
-        /*stage('Save Kubeconfig') {
+        stage('Save Kubeconfig') {
             steps {
                 sh '''
                     gcloud container clusters get-credentials $TF_VAR_cluster_name --zone $TF_VAR_zone --project $GCP_PROJECT
@@ -124,7 +124,7 @@ pipeline {
                 '''
             }
         }
-
+/*
         stage('Destroy GKE Cluster') {
             steps {
                 withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
