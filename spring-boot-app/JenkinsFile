@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-credentials') // GCP JSON key stored as a secret
+        SCANNER_HOME= tool 'sonar-scanner'
     }
 
     stages {
@@ -11,8 +12,16 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/Varaprasad0389/devops_e2e_workflow.git'
             }
         }
+    stage('SonarQube Analsyis') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=packagebuild -Dsonar.projectKey=packagebuild \
+                            -Dsonar.java.binaries=. '''
+                }
+            }
+        }
 
-        stage('Build and Test') {
+      stage('Build and Test') {
             steps {
                 sh 'echo "Listing files before build:"'
                 sh 'ls -ltr'
