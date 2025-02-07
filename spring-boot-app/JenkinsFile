@@ -66,7 +66,7 @@ pipeline {
                 }
             }
         }
-
+        
         stage('Build and Test') {
             steps {
                 sh 'echo "Listing files before build:"'
@@ -126,6 +126,22 @@ pipeline {
                     kubectl apply -f spring-boot-app/deployment.yml
                     kubectl apply -f spring-boot-app/service.yml
                 '''
+            }
+        }
+
+        stage('Terraform Destroy') {
+            when {
+                expression { return params.DESTROY == 'true' } // Controlled by a parameter
+            }
+            steps {
+                withCredentials([file(credentialsId: 'devopse2e', variable: 'GCP_SA_KEY')]) {
+                    sh '''
+                        export GOOGLE_APPLICATION_CREDENTIALS=$GCP_SA_KEY
+                        cd spring-boot-app/terraform
+                        echo "Destroying Terraform Infrastructure..."
+                        terraform destroy -auto-approve
+                    '''
+                }
             }
         }
     }
