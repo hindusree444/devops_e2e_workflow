@@ -17,6 +17,7 @@ resource "google_compute_instance" "vm_instance" {
   network_interface {
     network = "default"
     access_config {}
+    tags   = ["sonarqube"]  # Add network tags to match firewall rule
   }
 
   metadata_startup_script = <<-EOT
@@ -30,7 +31,7 @@ resource "google_compute_instance" "vm_instance" {
     sysctl -p
     echo "sonarqube - nofile 131072" >> /etc/security/limits.conf
     echo "sonarqube - nproc 8192" >> /etc/security/limits.conf
-    sudo docker run -d --name sonarqube -p 9000:9000 sonarqube:lts
+    sudo docker run -d --name sonarqube -p 0.0.0.0:9000:9000 sonarqube:lts  # Bind to all interfaces
   EOT
 }
 
