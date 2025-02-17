@@ -4,7 +4,7 @@ provider "google" {
 }
 
 resource "google_compute_instance" "vm_instance" {
-  name         = "Sonarqube"
+  name         = "sonarqube"
   machine_type = "e2-medium"
   zone         = "europe-west1-b"
 
