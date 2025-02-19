@@ -1,5 +1,5 @@
 provider "google" {
-  project = "devops-e2e-workflow"
+  project = "harness-project-450807"
   region  = "europe-west1"
   zone    = "europe-west1-b"
 }
