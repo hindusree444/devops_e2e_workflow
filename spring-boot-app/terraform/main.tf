@@ -9,19 +9,17 @@ terraform {
     }
   }
 }
-# Google Cloud provider configuration using credentials stored in Harness
+
 provider "google" {
-  project     = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
-  region      = "europe-west1"          # Replace with your preferred region
-  zone        = "europe-west1-b"       # Replace with your desired zone
-  credentials = file(var.GOOGLE_CREDENTIALS_JSON)
+  project     = "devops-e2e-workflow"  
+  region      = "europe-west1"         
+  zone        = "europe-west1-b"       
+  credentials = file(var.google_credentials_json)  
 }
 
 # Harness provider configuration
 provider "harness" {
-  # Add any necessary configuration for the Harness provider here
-  # Example: 
-  # api_key = "mykey_statefile"
+  api_key = "mykey_statefile"  
 }
 
 # GKE Cluster resource configuration
