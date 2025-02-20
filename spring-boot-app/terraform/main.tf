@@ -9,25 +9,19 @@ terraform {
     }
   }
 }
-
-# Reference the secret stored in Harness Secrets Manager
-data "harness_secret" "google_credentials" {
-  secret_id = "hindusree454"  # The secret ID where your Google Cloud service account key is stored in Harness
-}
-
 # Google Cloud provider configuration using credentials stored in Harness
 provider "google" {
   project     = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
   region      = "europe-west1"          # Replace with your preferred region
   zone        = "europe-west1-b"       # Replace with your desired zone
-  credentials = data.harness_secret.google_credentials.value  # Using secret value from Harness
+  credentials = file(var.GOOGLE_CREDENTIALS_JSON)
 }
 
 # Harness provider configuration
 provider "harness" {
   # Add any necessary configuration for the Harness provider here
   # Example: 
-  # api_key = "your-harness-api-key"
+  # api_key = "mykey_statefile"
 }
 
 # GKE Cluster resource configuration
