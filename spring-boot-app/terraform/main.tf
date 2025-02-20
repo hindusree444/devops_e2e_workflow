@@ -25,12 +25,12 @@ resource "google_container_cluster" "gke_cluster" {
 resource "google_container_node_pool" "primary_nodes" {
   name       = "node-pool"
   cluster    = google_container_cluster.gke_cluster.name
-  node_count = 1
+  node_count = 2
 
   node_config {
-    service_account = "devops-e2e-sa@devops-e2e-workflow.iam.gserviceaccount.com"
+    service_account = "devops-e2e-workflow@devops-e2e-workflow.iam.gserviceaccount.com"
     machine_type    = "e2-medium"
-    disk_size_gb    = 10
+    disk_size_gb    = 20
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
