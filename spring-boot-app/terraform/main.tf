@@ -1,19 +1,30 @@
-provider "google" {
-  project = "devops-e2e-workflow"
-  zone = "europe-west1-b"
+# Reference the secret stored in Harness Secrets Manager
+data "harness_secret" "google_credentials" {
+  secret_id = "hindusree454"  # The secret ID you stored in Harness
 }
 
+# Google Cloud provider configuration
+provider "google" {
+  project     = "devops-e2e-workflow"  # Your Google Cloud project ID
+  region      = "europe-west1"          # Google Cloud region
+  zone        = "europe-west1-b"       # Specific zone for GKE
+  credentials = data.harness_secret.google_credentials.value  # Using secret value
+}
+
+# GKE Cluster resource configuration
 resource "google_container_cluster" "gke_cluster" {
   name     = "my-gke-cluster1"
-  #location = "europe-west1"
+  location = "europe-west1"  # Region for the GKE cluster
 
   remove_default_node_pool = true
   initial_node_count       = 1
+
   lifecycle {
     prevent_destroy = false
   }
 }
 
+# Node pool resource configuration for GKE
 resource "google_container_node_pool" "primary_nodes" {
   name       = "node-pool"
   cluster    = google_container_cluster.gke_cluster.name
@@ -27,9 +38,8 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
-  lifecycle {
-    # Remove prevent_destroy if present
-    prevent_destroy = false
-  }  
-}
 
+  lifecycle {
+    prevent_destroy = false
+  }
+}
