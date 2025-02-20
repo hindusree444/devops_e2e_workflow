@@ -1,14 +1,18 @@
 terraform {
   required_providers {
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = "6.21.0"
     }
+  }
+}
+
+# Google Cloud provider configuration using credentials
 provider "google" {
-  project     = "devops-e2e-workflow"  
-  region      = "europe-west1"         
-  zone        = "europe-west1-b"       
-  credentials = file(var.google_credentials_json)  
+  project     = "devops-e2e-workflow"  # Google Cloud project ID
+  region      = "europe-west1"         # Google Cloud region
+  zone        = "europe-west1-b"       # Google Cloud zone
+  credentials = file(var.google_credentials_json)  # Path to the JSON key file for authentication
 }
 
 # GKE Cluster resource configuration
