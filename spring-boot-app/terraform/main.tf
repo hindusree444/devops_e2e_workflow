@@ -10,19 +10,11 @@ terraform {
   }
 }
 
-# Declare the GOOGLE_CREDENTIALS_JSON variable
-variable "GOOGLE_CREDENTIALS_JSON" {
-  description = "Google Cloud JSON credentials file content as a string"
-  type        = string
-  sensitive   = true
-}
-
 # Google Cloud provider configuration using environment variable for credentials
 provider "google" {
   project     = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
   region      = "europe-west1"          # Your preferred region
   zone        = "europe-west1-b"       # Your desired zone
-  credentials = jsondecode(var.GOOGLE_CREDENTIALS_JSON)  # Use the environment variable for credentials
 }
 
 # GKE Cluster resource configuration
@@ -56,9 +48,4 @@ resource "google_container_node_pool" "primary_nodes" {
   lifecycle {
     prevent_destroy = false
   }
-}
-
-# Output the Cluster Name
-output "gke_cluster_name" {
-  value = google_container_cluster.gke_cluster.name
 }
