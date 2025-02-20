@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     google = {
-      source  = "hashicorp/google"
+      source = "hashicorp/google"
       version = "6.21.0"
     }
     harness = {
@@ -9,15 +9,13 @@ terraform {
     }
   }
 }
-data "harness_secret" "google_credentials" {
-  secret_id = "google_credentials_json"  # The ID of the secret you stored in Harness
-}
-# Google Cloud provider configuration using credentials
+
+# Google Cloud provider configuration using environment variable for credentials
 provider "google" {
-  project     = "devops-e2e-workflow"  # Google Cloud project ID
-  region      = "europe-west1"         # Google Cloud region
-  zone        = "europe-west1-b"       # Google Cloud zone
-  credentials = jsondecode(data.harness_secret.google_credentials.value) # Path to the JSON key file for authentication
+  project     = "devops-e2e-workflow"  # Your Google Cloud project ID
+  region      = "europe-west1"          # Your preferred region
+  zone        = "europe-west1-b"       # Your desired zone
+  credentials = jsondecode(var.GOOGLE_CREDENTIALS_JSON)  # Use the environment variable for credentials
 }
 
 # GKE Cluster resource configuration
