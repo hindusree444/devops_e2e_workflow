@@ -1,4 +1,11 @@
-terraform {
+terraform 
+{
+  backend "gcs" {
+    bucket = "statestorebucket"  
+    prefix = "terraform/state"           
+    project = "devops-e2e-workflow"      
+    region  = "europe-west1"              
+  }
   required_providers {
     google = {
       source = "hashicorp/google"
@@ -9,15 +16,11 @@ terraform {
     }
   }
 }
-
-# Google Cloud provider configuration using environment variable for credentials
 provider "google" {
   project     = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
   region      = "europe-west1"          # Your preferred region
   zone        = "europe-west1-b"       # Your desired zone
 }
-
-# GKE Cluster resource configuration
 resource "google_container_cluster" "gke_cluster" {
   name     = "my-gke-cluster1"
   location = "europe-west1"  # Region for the GKE cluster
@@ -30,7 +33,6 @@ resource "google_container_cluster" "gke_cluster" {
   }
 }
 
-# Node pool resource configuration for GKE
 resource "google_container_node_pool" "primary_nodes" {
   name       = "node-pool"
   cluster    = google_container_cluster.gke_cluster.name
