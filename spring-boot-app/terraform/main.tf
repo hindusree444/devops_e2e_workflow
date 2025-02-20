@@ -8,7 +8,7 @@ provider "google" {
   project     = "devops-e2e-workflow"  # Your Google Cloud project ID
   region      = "europe-west1"          # Google Cloud region
   zone        = "europe-west1-b"       # Specific zone for GKE
-  credentials = data.harness_secret.google_credentials.value  # Using secret value
+  credentials = data.harness_secret.google_credentials.value  # Using secret value from Harness Secrets Manager
 }
 
 # GKE Cluster resource configuration
@@ -38,8 +38,3 @@ resource "google_container_node_pool" "primary_nodes" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
-
-  lifecycle {
-    prevent_destroy = false
-  }
-}
