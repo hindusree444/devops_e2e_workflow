@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
     bucket = "statestorebucket"  
-    key    = "terraform/state"       
+    prefix = "terraform/state"       
     region = "europe-west1"            
   }
 }
