@@ -6,7 +6,6 @@ terraform {
     }
     harness = {
       source = "harness/harness"
-      version = "2.0.0"  # Replace with the desired version
     }
   }
 }
