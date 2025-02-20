@@ -1,12 +1,5 @@
 terraform 
 {
-  backend "gcs" {
-    bucket = "statestorebucket"  
-    prefix = "terraform/state"           
-    project = "devops-e2e-workflow"      
-    region  = "europe-west1"    
-    credentials = jsondecode(var.GOOGLE_CREDENTIALS_JSON)
-  }
   required_providers {
     google = {
       source = "hashicorp/google"
