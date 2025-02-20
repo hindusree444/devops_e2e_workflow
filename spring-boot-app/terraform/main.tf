@@ -1,4 +1,11 @@
-terraform 
+terraform {
+  backend "s3" {
+    bucket = "statestorebucket"  
+    key    = "terraform/state"       
+    region = "europe-west1"            
+  }
+}
+
 {
   required_providers {
     google = {
