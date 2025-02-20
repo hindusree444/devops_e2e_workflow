@@ -4,17 +4,6 @@ terraform {
     prefix = "terraform/state"
   }
 }
-
-required_providers {
-  google = {
-    source  = "hashicorp/google"
-    version = "6.21.0"
-  }
-  harness = {
-    source = "harness/harness"
-  }
-}
-
 provider "google" {
   project = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
   region  = "europe-west1"          # Your preferred region
