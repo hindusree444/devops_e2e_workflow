@@ -1,5 +1,5 @@
 terraform {
-  backend "s3" {
+  backend "gcs" {
     bucket = "statestorebucket"  
     key    = "terraform/state"       
     region = "europe-west1"            
