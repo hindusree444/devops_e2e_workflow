@@ -1,27 +1,26 @@
 terraform {
   backend "gcs" {
     bucket = "statestorebucket"  
-    prefix = "terraform/state"       
-    region = "europe-west1"            
+    prefix = "terraform/state"
   }
 }
 
-{
-  required_providers {
-    google = {
-      source = "hashicorp/google"
-      version = "6.21.0"
-    }
-    harness = {
-      source = "harness/harness"
-    }
+required_providers {
+  google = {
+    source  = "hashicorp/google"
+    version = "6.21.0"
+  }
+  harness = {
+    source = "harness/harness"
   }
 }
+
 provider "google" {
-  project     = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
-  region      = "europe-west1"          # Your preferred region
-  zone        = "europe-west1-b"       # Your desired zone
+  project = "devops-e2e-workflow"  # Replace with your Google Cloud project ID
+  region  = "europe-west1"          # Your preferred region
+  zone    = "europe-west1-b"        # Your desired zone
 }
+
 resource "google_container_cluster" "gke_cluster" {
   name     = "my-gke-cluster1"
   location = "europe-west1"  # Region for the GKE cluster
