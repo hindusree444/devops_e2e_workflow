@@ -4,22 +4,11 @@ terraform {
       source = "hashicorp/google"
       version = "6.21.0"
     }
-    harness = {
-      source = "harness/harness"
-    }
-  }
-}
-
 provider "google" {
   project     = "devops-e2e-workflow"  
   region      = "europe-west1"         
   zone        = "europe-west1-b"       
   credentials = file(var.google_credentials_json)  
-}
-
-# Harness provider configuration
-provider "harness" {
-  api_key = "mykey_statefile"  
 }
 
 # GKE Cluster resource configuration
